@@ -114,3 +114,12 @@ Donations fund additional production. After a confirmed donation, use the reposi
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+
+## Install and run
+
+```sh
+chmod +x install.sh run.sh
+./install.sh
+./run.sh --help
+```
