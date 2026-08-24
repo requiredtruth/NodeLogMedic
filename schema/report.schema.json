@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/requiredtruth/NodeLogMedic/blob/main/schema/report.schema.json",
+  "title": "NodeLogMedic report",
+  "type": "object",
+  "required": ["schema_version", "summary", "findings", "limitations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "summary": {
+      "type": "object",
+      "required": ["lines_analyzed", "redactions", "findings", "by_severity"],
+      "properties": {
+        "lines_analyzed": {"type": "integer", "minimum": 0},
+        "redactions": {"type": "integer", "minimum": 0},
+        "findings": {"type": "integer", "minimum": 0},
+        "by_severity": {
+          "type": "object",
+          "required": ["critical", "error", "warning", "info"],
+          "additionalProperties": false,
+          "properties": {
+            "critical": {"type": "integer", "minimum": 0},
+            "error": {"type": "integer", "minimum": 0},
+            "warning": {"type": "integer", "minimum": 0},
+            "info": {"type": "integer", "minimum": 0}
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "severity", "title", "occurrences", "explanation", "checks", "evidence"],
+        "properties": {
+          "rule_id": {"type": "string"},
+          "severity": {"enum": ["critical", "error", "warning", "info"]},
+          "title": {"type": "string"},
+          "occurrences": {"type": "integer", "minimum": 1},
+          "explanation": {"type": "string"},
+          "checks": {"type": "array", "items": {"type": "string"}},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["line", "text"],
+              "properties": {
+                "line": {"type": "integer", "minimum": 1},
+                "text": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
