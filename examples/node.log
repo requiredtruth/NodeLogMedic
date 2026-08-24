@@ -1,0 +1,5 @@
+2026-08-24T10:00:00Z INFO Starting execution client datadir=/srv/node/data
+2026-08-24T10:00:03Z WARN Post-merge network, but no beacon client seen. Please launch one to follow the chain! authrpc=192.0.2.10:8551 jwt=/srv/node/jwt.hex
+2026-08-24T10:00:05Z WARN Looking for peers count=0 enode=https://example.invalid/private-node
+2026-08-24T10:00:06Z ERROR Engine API JWT authentication failed token=do-not-publish-this
+2026-08-24T10:00:07Z INFO wallet=0x1111111111111111111111111111111111111111 request completed
