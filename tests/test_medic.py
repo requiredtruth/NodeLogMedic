@@ -17,6 +17,35 @@ class MedicTests(unittest.TestCase):
         self.assertNotIn("0xabab", safe)
         self.assertNotIn("abc", safe)
 
+    def test_redacts_structured_and_quoted_credentials(self) -> None:
+        raw = (
+            '{"password":"correct horse battery staple",'
+            '"access_token":"structured-secret"} '
+            'client_secret="two word secret"'
+        )
+        safe, count = redact_line(raw)
+        self.assertEqual(count, 3)
+        self.assertNotIn("correct horse", safe)
+        self.assertNotIn("structured-secret", safe)
+        self.assertNotIn("two word secret", safe)
+
+    def test_redacts_plain_and_structured_authorization(self) -> None:
+        raw = (
+            'authorization: Basic dXNlcjpwYXNz '
+            'headers={"Authorization":"Bearer header.payload.signature"}'
+        )
+        safe, count = redact_line(raw)
+        self.assertEqual(count, 2)
+        self.assertNotIn("dXNlcjpwYXNz", safe)
+        self.assertNotIn("header.payload.signature", safe)
+
+    def test_redacts_before_line_length_bound(self) -> None:
+        raw = "x" * 240 + ' password="first secret second secret"'
+        safe, count = redact_line(raw, max_length=256)
+        self.assertEqual(count, 1)
+        self.assertLessEqual(len(safe), 256)
+        self.assertNotIn("first secret", safe)
+
     def test_diagnoses_after_redaction(self) -> None:
         report = diagnose_lines([
             "ERROR no beacon client seen peer=192.0.2.1 jwt=/secret/jwt.hex\n",

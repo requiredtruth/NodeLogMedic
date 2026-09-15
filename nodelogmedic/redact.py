@@ -2,8 +2,20 @@ from __future__ import annotations
 
 import re
 
+_QUOTED_VALUE = r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\''
+_AUTHORIZATION = re.compile(
+    rf"(?i)(?<![\w-])[\"']?authorization[\"']?\s*[:=]\s*"
+    rf"(?:{_QUOTED_VALUE}|(?:basic|bearer)\s+[^\s,;}}\]]+|[^\s,;}}\]]+)"
+)
+_CREDENTIAL = re.compile(
+    rf"(?i)(?<![\w-])[\"']?(?:api[_-]?key|client[_-]?secret|password|private[_-]?key|"
+    rf"refresh[_-]?token|access[_-]?token|secret|token|jwt)[\"']?\s*[:=]\s*"
+    rf"(?:{_QUOTED_VALUE}|[^\s,;}}\]]+)"
+)
+
 _RULES: tuple[tuple[re.Pattern[str], str], ...] = (
-    (re.compile(r"(?i)\b(?:authorization\s*[:=]\s*bearer|api[_-]?key\s*[:=]|secret\s*[:=]|password\s*[:=]|token\s*[:=]|jwt\s*[:=])\s*[^\s,;]+"), "[SECRET]"),
+    (_AUTHORIZATION, "[SECRET]"),
+    (_CREDENTIAL, "[SECRET]"),
     (re.compile(r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"), "[JWT]"),
     (re.compile(r"(?i)\b(?:https?|wss?)://[^\s]+"), "[URL]"),
     (re.compile(r"(?i)0x[0-9a-f]{64}\b"), "[HEX_32_BYTES]"),
@@ -25,9 +37,9 @@ def redact_line(line: str, *, max_length: int = 4096) -> tuple[str, int]:
         raise TypeError("line must be text")
     if not 256 <= max_length <= 65_536:
         raise ValueError("max_length must be between 256 and 65536")
-    value = line.rstrip("\r\n")[:max_length]
+    value = line.rstrip("\r\n")
     substitutions = 0
     for pattern, replacement in _RULES:
         value, count = pattern.subn(replacement, value)
         substitutions += count
-    return value, substitutions
+    return value[:max_length], substitutions

@@ -3,7 +3,16 @@
 **Local blockchain node log diagnosis with automatic secret, wallet, IP, URL, and filesystem-path redaction.** NodeLogMedic streams a log once, redacts each line before matching or retaining evidence, groups repeated symptoms, and emits a compact terminal board or stable JSON.
 
 ```bash
-python -m nodelogmedic examples/node.log --color always
+./install.sh
+./run.sh
+```
+
+The normal entry point opens a PySide6 control panel with live status, output,
+and actions for the bundled synthetic demo, test suite, repair, and stop. Run
+the same demo directly with `./demo.sh`, or use `./cli.sh` for CLI-only work:
+
+```bash
+./cli.sh examples/node.log --color always
 ```
 
 ```text
@@ -79,7 +88,7 @@ Only an already-redacted report can reach the AI layer, and the endpoint must be
 
 ## Redaction boundary
 
-The built-in redactor targets credential assignments, bearer tokens, JWTs, HTTP/WebSocket URLs, 32-byte hex values, EVM addresses, IPv4/IPv6 addresses, and common absolute Unix/Windows paths. Long lines are bounded before analysis.
+The built-in redactor targets plain and JSON credential assignments, Basic and Bearer authorization values, JWTs, HTTP/WebSocket URLs, 32-byte hex values, EVM addresses, IPv4/IPv6 addresses, and common absolute Unix/Windows paths. Quoted credential values may contain spaces. Redaction runs before long lines are bounded for analysis.
 
 Redaction is defense in depth, not a mathematical guarantee. Review any report before publishing it. Unusual secret encodings, split secrets, hostnames outside URLs, application-specific identifiers, and multiline data may remain.
 
@@ -102,7 +111,7 @@ report = diagnose_lines(
 ## One-command verification
 
 ```bash
-python -m unittest discover -s tests -v
+./test.sh
 ```
 
 The test suite verifies redaction, diagnosis after redaction, bounded evidence, stable clean output, parameter bounds, and loopback-only AI access.
@@ -116,15 +125,6 @@ Donations fund additional production. After a confirmed donation, use the reposi
 Apache-2.0. See [LICENSE](LICENSE).
 
 
-## Install and run
-
-```sh
-chmod +x install.sh run.sh
-./install.sh
-./run.sh --help
-```
-
-
-## Standard launcher
-
-`./run.sh` is the normal entry point. It runs `./install.sh` automatically when setup is missing, then opens the PySide6 control panel with live output and actions for the demo, tests, repair, and stop. Use `./cli.sh` for CLI-only operation.
+`./run.sh` automatically runs the repeat-safe `./install.sh` when setup is
+missing or incomplete. `./install.sh` installs or repairs every dependency and
+verifies the application before marking the GUI ready.
