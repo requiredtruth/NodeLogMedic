@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-09-15
+
+- Redact JSON credentials, quoted values with spaces, and Basic authorization values.
+- Apply redaction before the configured line-length bound.
+- Add deterministic demo and test scripts and exercise both real GUI actions in CI.
+
 ## 0.1.0 - 2026-08-24
 
 - Add streaming, bounded, secret-safe node log redaction and diagnosis.
